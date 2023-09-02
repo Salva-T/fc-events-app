@@ -1,33 +1,33 @@
 {
   "project_info": {
-    "project_number": "654519734048",
-    "project_id": "fcevents-a8857",
-    "storage_bucket": "fcevents-a8857.appspot.com"
+    "project_number": "798921772901",
+    "project_id": "fc-events-app-f305c",
+    "storage_bucket": "fc-events-app-f305c.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:654519734048:android:0f7b9e818a49a185be5145",
+        "mobilesdk_app_id": "1:798921772901:android:7e20dfc986f30635561b8c",
         "android_client_info": {
           "package_name": "com.example.hello"
         }
       },
       "oauth_client": [
         {
-          "client_id": "654519734048-52jnqkogmo4dofaf1lig3hef3bmuc5ek.apps.googleusercontent.com",
+          "client_id": "798921772901-ki0gceujn6uto9ip41vek02o7fvb36lb.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyC-n-Cb5BQ6rPFARHQmfh-cYBrqAvY_kQE"
+          "current_key": "AIzaSyDLl0w0jNhp7v6O8yCnZaBtISnpLig22xM"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "654519734048-52jnqkogmo4dofaf1lig3hef3bmuc5ek.apps.googleusercontent.com",
+              "client_id": "798921772901-ki0gceujn6uto9ip41vek02o7fvb36lb.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

@@ -1,31 +1,69 @@
 import 'package:flutter/material.dart';
-import 'package:hello/forms/home_page.dart';
-import 'package:hello/forms/signup_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../users/login_page.dart';
+import 'org_home.dart';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
 
-class LoginForm extends StatefulWidget {
-  const LoginForm({super.key});
+class LoginForm1 extends StatefulWidget {
+  const LoginForm1({super.key});
 
   @override
-  State<LoginForm> createState() => _LoginFormState();
+  State<LoginForm1> createState() => _LoginForm1State();
 }
 
-class _LoginFormState extends State<LoginForm> {
+class _LoginForm1State extends State<LoginForm1> {
   String _email = "";
   String _password = "";
+  String? userEmail;
+  String? _userEmail;
 
-  void _signInWithEmailAndPassword() async {
-    try {
-      await _auth.signInWithEmailAndPassword(
-          email: _email, password: _password);
-      // Navigate to the next screen or do something else
-      print('success');
+  bool _obscureText = true; //eyepassword
+
+  void initState() {
+    super.initState();
+    getUserEmail();
+  }
+
+  Future<void> getUserEmail() async {
+    final prefs = await SharedPreferences.getInstance();
+    userEmail = prefs.getString('email');
+    print(userEmail);
+    if (userEmail != null) {
       Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => HomePage(),
+            builder: (context) => OrgHome(),
+          ));
+    }
+    setState(() {
+      _userEmail = userEmail;
+    });
+  }
+
+  void _signInWithEmailAndPassword() async {
+    try {
+      UserCredential result = await _auth.signInWithEmailAndPassword(
+          email: _email, password: _password);
+
+      final User user = result.user!;
+      String userEmail = user.email!;
+      // Navigate to the next screen or do something else
+      print('success');
+      print(user);
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('email', userEmail);
+      await prefs.setString('uid', user.uid);
+      if (user.displayName != null) {
+        await prefs.setString('username', user.displayName!);
+      }
+      ;
+
+      Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => OrgHome(),
           ));
     } on FirebaseAuthException catch (e) {
       // Handle any errors that occur
@@ -103,7 +141,7 @@ class _LoginFormState extends State<LoginForm> {
                                 _email = value.trim();
                               });
                             },
-                            decoration: InputDecoration(
+                            decoration: const InputDecoration(
                               hintText: 'Username',
                               border: InputBorder.none,
                               contentPadding: EdgeInsets.symmetric(
@@ -131,8 +169,22 @@ class _LoginFormState extends State<LoginForm> {
                                 _password = value.trim();
                               });
                             },
+                            obscureText: _obscureText,
                             decoration: InputDecoration(
                               hintText: 'Password',
+                              suffixIcon: IconButton(
+                                icon: Icon(
+                                  _obscureText
+                                      ? Icons.visibility
+                                      : Icons.visibility_off,
+                                  size: 18.0, // Set the size of the icon here
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    _obscureText = !_obscureText;
+                                  });
+                                },
+                              ),
                               border: InputBorder.none,
                               contentPadding: EdgeInsets.symmetric(
                                   horizontal: 16, vertical: 12),
@@ -157,32 +209,22 @@ class _LoginFormState extends State<LoginForm> {
                           )),
                           child: const SizedBox(child: Text("Sign in")),
                         )),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        TextButton(
-                            onPressed: () {},
-                            child: const Text(
-                              "Forgot password",
-                              style: TextStyle(fontSize: 14),
-                            )),
-                        TextButton(
-                            onPressed: () {
-                              Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => SignUpPage(),
-                                  ));
-                            },
-                            child: const Text(
-                              "Sign up",
-                              style: TextStyle(fontSize: 14),
-                            )),
-                      ],
-                    ),
                     const SizedBox(
-                      height: 20,
+                      height: 40,
                     ),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 150.0),
+                      child: TextButton(
+                          onPressed: () {
+                            print('yes');
+                            Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => LoginForm(),
+                                ));
+                          },
+                          child: Text("User Login")),
+                    )
                   ],
                 ),
               ),

@@ -39,7 +39,14 @@ dependencies:
   firebase_core: ^2.7.1
   fluttertoast: ^8.2.1
   cloud_firestore: ^4.4.4
-  
+  firebase_admin: ^0.2.0
+  shared_preferences: ^2.0.20
+  google_nav_bar: ^5.0.6 
+  image_picker: ^0.8.7
+  firebase_storage: ^11.0.16
+  flutter_rating_bar: ^4.0.1
+  firebase_messaging: ^14.4.0
+  google_fonts: ^4.0.3
 
 dev_dependencies:
   flutter_test:

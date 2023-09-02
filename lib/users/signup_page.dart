@@ -1,8 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:hello/forms/home_page.dart';
-import 'package:hello/forms/login_forms.dart';
+import 'package:hello/users/home_page.dart';
+import 'package:hello/users/login_page.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:firebase_admin/firebase_admin.dart';
+
+import 'create_page.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
@@ -15,6 +18,10 @@ class _SignUpPageState extends State<SignUpPage> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  String Username = '';
+  String Register_no = '';
+  String Department = '';
+  String Phone_no = '';
 
   @override
   Widget build(BuildContext context) {
@@ -88,7 +95,7 @@ class _SignUpPageState extends State<SignUpPage> {
                               }
                               return null;
                             },
-                            decoration: InputDecoration(
+                            decoration: const InputDecoration(
                               hintText: 'Email Id',
                               border: InputBorder.none,
                               contentPadding: EdgeInsets.symmetric(
@@ -119,7 +126,7 @@ class _SignUpPageState extends State<SignUpPage> {
                               }
                               return null;
                             },
-                            decoration: InputDecoration(
+                            decoration: const InputDecoration(
                               hintText: 'Password',
                               border: InputBorder.none,
                               contentPadding: EdgeInsets.symmetric(
@@ -141,13 +148,18 @@ class _SignUpPageState extends State<SignUpPage> {
                           decoration: BoxDecoration(
                             color: Colors.grey[200],
                           ),
-                          child: const TextField(
+                          child: TextField(
                             decoration: InputDecoration(
                               hintText: 'Full Name',
                               border: InputBorder.none,
                               contentPadding: EdgeInsets.symmetric(
                                   horizontal: 16, vertical: 12),
                             ),
+                            onChanged: (value) {
+                              setState(() {
+                                Username = value;
+                              });
+                            },
                           ),
                         ),
                       ),
@@ -164,13 +176,18 @@ class _SignUpPageState extends State<SignUpPage> {
                           decoration: BoxDecoration(
                             color: Colors.grey[200],
                           ),
-                          child: const TextField(
+                          child: TextField(
                             decoration: InputDecoration(
                               hintText: 'Register Number',
                               border: InputBorder.none,
                               contentPadding: EdgeInsets.symmetric(
                                   horizontal: 16, vertical: 12),
                             ),
+                            onChanged: (value) {
+                              setState(() {
+                                Register_no = value;
+                              });
+                            },
                           ),
                         ),
                       ),
@@ -187,13 +204,18 @@ class _SignUpPageState extends State<SignUpPage> {
                           decoration: BoxDecoration(
                             color: Colors.grey[200],
                           ),
-                          child: const TextField(
+                          child: TextField(
                             decoration: InputDecoration(
                               hintText: 'Department',
                               border: InputBorder.none,
                               contentPadding: EdgeInsets.symmetric(
                                   horizontal: 16, vertical: 12),
                             ),
+                            onChanged: (value) {
+                              setState(() {
+                                Department = value;
+                              });
+                            },
                           ),
                         ),
                       ),
@@ -210,13 +232,18 @@ class _SignUpPageState extends State<SignUpPage> {
                           decoration: BoxDecoration(
                             color: Colors.grey[200],
                           ),
-                          child: const TextField(
+                          child: TextField(
                             decoration: InputDecoration(
-                              hintText: 'phone Number',
+                              hintText: 'Phone Number',
                               border: InputBorder.none,
                               contentPadding: EdgeInsets.symmetric(
                                   horizontal: 16, vertical: 12),
                             ),
+                            onChanged: (value) {
+                              setState(() {
+                                Phone_no = value;
+                              });
+                            },
                           ),
                         ),
                       ),
@@ -240,13 +267,63 @@ class _SignUpPageState extends State<SignUpPage> {
                                 print(
                                     'User registered: ${userCredential.user?.uid}');
                                 Fluttertoast.showToast(
-                                    msg: 'User registered successfully');
+                                    msg:
+                                        'User registered successfully'); //add profiledata to database
+                                Map<String, dynamic> data = {
+                                  'Username': Username,
+                                  'Register No': Register_no,
+                                  'Department': Department,
+                                  'Phone No': Phone_no,
+                                  'UserId': userCredential.user?.uid,
+                                };
+                                // firestore.collection('events').doc().set(data);
+                                firestore.collection('profiledata').add(data);
+
+                                // Add code here to save event to database
+                                final String idToken =
+                                    await userCredential.user!.getIdToken();
+//add display name
+                                final User? user = userCredential.user;
+                                if (user != null) {
+                                  await user.updateDisplayName(
+                                      "Jane Q. User"); //displayname
+                                }
+
+                                // Set custom claims for the user
+                                final Map<String, dynamic> claims = {
+                                  'admin': true
+                                };
+                                var credential =
+                                    Credentials.applicationDefault();
+
+                                // when no credentials found, login using openid
+                                // the credentials are stored on disk for later use
+                                // either set the parameters clientId and clientSecret of the login method or
+                                // set the env variable FIREBASE_CLIENT_ID and FIREBASE_CLIENT_SECRET
+                                credential ??= await Credentials.login();
+
+                                var projectId = 'some-project';
+                                // create an app
+                                var app = FirebaseAdmin.instance.initializeApp(
+                                    AppOptions(
+                                        credential: credential,
+                                        projectId: projectId,
+                                        storageBucket:
+                                            '$projectId.appspot.com'));
+
+                                await app.auth().setCustomUserClaims(
+                                    userCredential.user!.uid, claims);
                               } on FirebaseAuthException catch (e) {
                                 print('Failed to register user: $e');
                                 Fluttertoast.showToast(
                                     msg: 'Failed to register user');
                               }
                             }
+                            Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => HomePage(),
+                                ));
                           },
                           style: ElevatedButton.styleFrom(
                               shape: RoundedRectangleBorder(
@@ -260,7 +337,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        Text(
+                        const Text(
                           "Already have an account?",
                           style: TextStyle(fontSize: 14),
                         ),
@@ -269,7 +346,7 @@ class _SignUpPageState extends State<SignUpPage> {
                               Navigator.pushReplacement(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => LoginForm(),
+                                    builder: (context) => const LoginForm(),
                                   ));
                             },
                             child: const Text(
