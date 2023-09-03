@@ -19,7 +19,9 @@ Notifications and reminders
 ## Screenshots
 
 ### Login pages<br><br>
-<img src="https://github.com/Salva-T/fc-events-app/assets/85862842/8a044e70-5f95-49b2-a60c-75ba40fc25eb" alt="Image Description" width="265" height="533">
+
+<img src="https://github.com/Salva-T/fc-events-app/assets/85862842/1d44fda4-c122-435b-a27a-7bc0811f24ed" alt="signup" width="265" height="533">
+<img src="https://github.com/Salva-T/fc-events-app/assets/85862842/8a044e70-5f95-49b2-a60c-75ba40fc25eb" alt="Image Description" width="265" height="533"><br>
 <img src="https://github.com/Salva-T/fc-events-app/assets/85862842/015b743b-06df-4a37-b296-1acfbc481c0a" alt="Image Description" width="265" height="533"><br>
 
 ### User module<br><br>
